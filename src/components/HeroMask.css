@@ -1,0 +1,65 @@
+/* HeroMask.css */
+:root {
+  --emerald: #10b981;
+  --bg-dark: #030712;
+}
+
+.boot-container {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-dark);
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+/* BOOT SCREEN (PHASE 1) */
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-dark);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.boot-content { text-align: center; }
+
+.boot-text {
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: clamp(0.3rem, 2vw, 1rem);
+  margin-bottom: 0.5rem;
+}
+
+.boot-sub {
+  font-family: monospace;
+  opacity: 0.6;
+  letter-spacing: 0.3rem;
+}
+
+.boot-bar {
+  width: 80%;
+  max-width: 300px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 2rem auto;
+  position: relative;
+}
+
+.boot-bar-inner {
+  position: absolute;
+  height: 100%;
+  width: 0%;
+  background: var(--emerald);
+  box-shadow: 0 0 10px var(--emerald);
+}
+
+.boot-status {
+  font-family: monospace;
+  color: var(--emerald);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+}

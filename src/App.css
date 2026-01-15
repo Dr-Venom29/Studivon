@@ -1,0 +1,69 @@
+/* src/components/HeroMask.css */
+:root {
+  --mask-x: 50%;
+  --mask-y: 50%;
+}
+
+.mask-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #020617; /* Deep Slate Under-layer */
+}
+
+.layer-under {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.dossier-text {
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 900;
+  color: #10b981;
+  opacity: 0.2;
+  user-select: none;
+}
+
+.layer-top {
+  position: absolute;
+  inset: 0;
+  background-color: #ffffff; /* The white surface */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  
+  /* The Mask Logic */
+  clip-path: circle(180px at var(--mask-x) var(--mask-y));
+  
+  pointer-events: none; 
+  transition: clip-path 0.1s ease-out;
+}
+
+.content-wrapper {
+  text-align: center;
+  pointer-events: auto; /* Makes sure you can still click the button */
+}
+
+.main-title {
+  font-size: 5rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.explore-btn {
+  margin-top: 2rem;
+  padding: 1rem 2.5rem;
+  background: #000;
+  color: #fff;
+  border-radius: 50px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}

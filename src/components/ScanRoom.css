@@ -1,0 +1,174 @@
+:root {
+  --emerald: #10b981;
+}
+
+.scan-room-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh; /* Fixed viewport height */
+  background: #030712;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Prevents the scan bar from triggering scrollbars */
+  font-family: 'Inter', sans-serif;
+}
+
+/* New: Handles content scrolling independently of the scan line */
+.scroll-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  scrollbar-width: thin;
+  scrollbar-color: var(--emerald) transparent;
+}
+
+.scan-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.sweep-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--emerald), transparent);
+  box-shadow: 0 0 20px var(--emerald);
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.chamber-layout {
+  position: relative;
+  width: 90%;
+  max-width: 1100px;
+  padding: 100px 0; /* Extra padding for top/bottom fixed UI */
+  text-align: center;
+}
+
+.system-tag {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--emerald);
+  letter-spacing: 4px;
+  font-size: 0.7rem;
+  margin-bottom: 10px;
+}
+
+.chamber-title {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900;
+  margin-bottom: 2.5rem;
+}
+
+.emerald { color: var(--emerald); }
+
+/* MODULES GRID */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 4rem;
+}
+
+.system-module {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(16, 185, 129, 0.1);
+  padding: 1.8rem;
+  text-align: left;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.system-module:hover {
+  border-color: var(--emerald);
+  background: rgba(16, 185, 129, 0.05);
+  transform: translateY(-5px);
+}
+
+.module-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0.8rem;
+}
+
+.module-icon { font-size: 1.5rem; }
+.system-module h3 { font-size: 1.1rem; font-weight: 700; margin: 0; color: #fff; }
+.system-module p { color: #94a3b8; font-size: 0.9rem; line-height: 1.6; }
+
+.mini-link {
+  background: transparent;
+  border: none;
+  color: var(--emerald);
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  margin-top: 1.2rem;
+  padding: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cta-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  padding: 1rem 2.2rem;
+  font-weight: 800;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-action:hover { transform: translateY(-2px); }
+.btn-action:active { transform: scale(0.95); }
+
+.primary { background: var(--emerald); border: none; color: #030712; }
+.outline { background: transparent; border: 1px solid #fff; color: #fff; }
+.text { background: transparent; border: none; color: var(--emerald); font-family: 'JetBrains Mono', monospace; }
+
+.exit-chamber {
+  position: fixed; 
+  top: 30px;
+  right: 30px;
+  background: rgba(3, 7, 18, 0.8);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--emerald);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  padding: 10px 18px;
+  cursor: pointer;
+  z-index: 100;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.exit-chamber:hover {
+  background: var(--emerald);
+  color: #030712;
+  box-shadow: 0 0 20px var(--emerald);
+}
+
+/*  */
