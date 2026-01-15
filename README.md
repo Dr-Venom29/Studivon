@@ -1,59 +1,91 @@
-🧠 Studivon: Full-Stack Neural Intelligence Interface
-Studivon is a high-end, proprietary AI terminal designed to track mental load, prevent burnout, and master complex subjects through adaptive neural analysis. This project combines a cinematic, high-performance frontend with a robust backend to provide real-time cognitive insights.
+# Studivon: Full-Stack Neural Intelligence Interface
 
-🌌 System Overview
-Studivon operates as a digital "Neural Core." The application is structured as a stage-based state machine, transitioning users from a cold-boot sequence into a live scanning environment.
+Studivon is a high-end, proprietary AI terminal designed to track mental load, prevent burnout, and master complex subjects through adaptive neural analysis.  
+This project combines a cinematic, high-performance frontend with a robust backend to provide real-time cognitive insights.
 
-1. Frontend Architecture (The Interface)
-The frontend is built for visual impact and speed, utilizing a "Terminal-First" aesthetic.
+---
 
-Cinematic Handshake: Uses GSAP and Anime.js to orchestrate a 3D perspective reveal and radial mask expansion upon system boot.
+##  System Overview
 
-Fluid Responsive Design: Implements CSS Clamp and Dynamic Viewport Units (dvh) to ensure massive desktop typography scales perfectly for mobile devices without layout breakage.
+Studivon operates as a digital **"Neural Core."**  
+The application is structured as a stage-based state machine, transitioning users from a cold-boot sequence into a live scanning environment.
 
-Protocol Modules: Feature sections are treated as technical dossiers, appearing via staggered scroll-triggers.
+---
 
-2. Backend Architecture (The Engine)
-The backend serves as the "Cognitive Engine," processing user performance data to generate adaptive study patterns.
+##  Frontend Architecture (The Interface)
 
-API Layer: RESTful architecture (Node.js/Express or Python/FastAPI) handling neural telemetry and user data.
+The frontend is built for **visual impact and speed**, utilizing a **Terminal-First** aesthetic.
 
-Neural Analysis Logic:
+### Key Features
 
-Adaptive Scheduling: Algorithms that recalibrate study intervals based on performance oscillations.
+- **Cinematic Handshake**  
+  Uses **GSAP** and **Anime.js** to orchestrate a 3D perspective reveal and radial mask expansion upon system boot.
 
-Memory Optimization: Spaced repetition logic calculated on the server to ensure long-term retention.
+- **Fluid Responsive Design**  
+  Implements **CSS Clamp** and **Dynamic Viewport Units (dvh)** to ensure massive desktop typography scales perfectly for mobile devices without layout breakage.
 
-Database Schema: Optimized for time-series data to track "Mental Load" and "Subject Mastery" over time.
+- **Protocol Modules**  
+  Feature sections are treated as technical dossiers, appearing via staggered scroll-trigger animations.
 
-🛠️ Tech Stack
-Frontend
-Framework: React (Vite)
+---
 
-Animations: GSAP (GreenSock), ScrollTrigger, Anime.js
+##  Backend Architecture (The Engine)
 
-Styling: Pure CSS3 (Flexbox/Grid), JetBrains Mono for technical typography
+The backend serves as the **Cognitive Engine**, processing user performance data to generate adaptive study patterns.
 
-Backend (Proposed/Current)
-Runtime: Node.js / Express
+### Core Components
 
-Database: PostgreSQL (for structured relational data) or MongoDB (for flexible telemetry logs)
+- **API Layer**  
+  RESTful architecture using **Node.js/Express** or **Python/FastAPI** for handling neural telemetry and user data.
 
-Authentication: JWT-based "Security Clearance" protocols
+- **Neural Analysis Logic**
+  - **Adaptive Scheduling** – Recalibrates study intervals based on performance oscillations  
+  - **Memory Optimization** – Server-side spaced repetition for long-term retention  
 
-✨ Implemented Features
-Protocol: SYSTEM_CAPABILITIES_REVEAL
-A cinematic transition that unfolds the following modules as the user scrolls:
+- **Database Schema**  
+  Optimized for **time-series data** to track:
+  - Mental Load  
+  - Subject Mastery  
 
-Adaptive Study Engine: Builds schedules based on real-time performance.
+---
 
-Spaced Repetition: Mathematical optimization of revision intervals.
+##  Tech Stack
 
-Burnout Detection: Preemptively identifies cognitive overload via load-tracking.
+### Frontend
+- **Framework:** React (Vite)  
+- **Animations:** GSAP, ScrollTrigger, Anime.js  
+- **Styling:** Pure CSS3 (Flexbox/Grid)  
+- **Typography:** JetBrains Mono  
 
-Weak Subject Isolation: Diagnostics to prioritize high-impact deficit areas.
+### Backend (Proposed / Current)
+- **Runtime:** Node.js / Express  
+- **Database:** PostgreSQL or MongoDB  
+- **Authentication:** JWT-based *Security Clearance* protocols  
 
-⚙️ Deployment & Persistence
-Stage Management: sessionStorage tracks system boot status, skipping initialization for returning users within the same session.
+---
 
-Global State: React Hooks manage the current "Neural Stage" (Boot, Landing, or Scan).
+##  Implemented Features
+
+### Protocol: `SYSTEM_CAPABILITIES_REVEAL`
+
+A cinematic transition that unfolds the following modules:
+
+- **Adaptive Study Engine** – Real-time performance-based scheduling  
+- **Spaced Repetition** – Mathematical optimization of revision intervals  
+- **Burnout Detection** – Identifies cognitive overload early  
+- **Weak Subject Isolation** – Prioritizes high-impact learning gaps  
+
+---
+
+##  Deployment & Persistence
+
+- **Stage Management**  
+  `sessionStorage` tracks system boot status to skip re-initialization for returning users.
+
+- **Global State**  
+  React Hooks manage the current **Neural Stage**:
+  - Boot  
+  - Landing  
+  - Scan  
+
+---
