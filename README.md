@@ -21,12 +21,9 @@ The frontend is built for **visual impact and speed**, utilizing a **Terminal-Fi
 - **Cinematic Handshake** 
   Uses **GSAP** and **Anime.js** to orchestrate a 3D perspective reveal and radial mask expansion upon system boot.
 
-- **Fluid Responsive Design**  
-  Implements **CSS Clamp** and **Dynamic Viewport Units (dvh)** to ensure massive desktop typography scales perfectly for mobile devices without layout breakage.
-  
+Fluid Responsive Design: Implements CSS Clamp and Dynamic Viewport Units (dvh) to ensure massive desktop typography scales perfectly for mobile devices without layout breakage.
 
-- **Protocol Modules**  
-  Feature sections are treated as technical dossiers, appearing via staggered scroll-trigger animations.
+Protocol Modules: Feature sections are treated as technical dossiers, appearing via staggered scroll-triggers.
 
 ---
 
