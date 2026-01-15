@@ -69,7 +69,14 @@
   mask-image: radial-gradient(circle var(--mask-size) at 50% 50%, black 100%, transparent 100%);
 }
 
-/* STATUS STRIP */
+:root {
+  --emerald: #10b981;
+  --emerald-glow: rgba(16, 185, 129, 0.4);
+  --dark-surface: #020617;
+  --tech-text: #d1fae5;
+}
+
+/* STATUS STRIP CONTAINER */
 .status-strip {
   position: absolute;
   top: 5.4rem;
@@ -81,56 +88,123 @@
   pointer-events: none;
 }
 
+/* The Glass Pill */
 .status-strip-inner {
   width: min(92%, 1040px);
-  padding: 0.4rem 1.9rem;
+  padding: 0.6rem 0;
   border-radius: 999px;
-  background: radial-gradient(circle at 0% 50%, rgba(16, 185, 129, 0.16), transparent 55%),
-              radial-gradient(circle at 100% 50%, rgba(56, 189, 248, 0.16), transparent 55%),
-              rgba(15, 23, 42, 0.92);
-  border: 1px solid rgba(148, 163, 184, 0.6);
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.75);
+  position: relative;
   overflow: hidden;
-  backdrop-filter: blur(16px);
+  
+  /* --- SHARPNESS FIX --- */
+  /* Removed linear-gradient grid texture. 
+     Using a solid deep color for maximum clarity. */
+  background-color: rgba(2, 6, 23, 0.95);
+  
+  /* Premium Border & Glow */
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: 
+    0 0 20px rgba(0, 0, 0, 0.8),
+    inset 0 0 15px rgba(16, 185, 129, 0.05),
+    0 0 0 1px rgba(16, 185, 129, 0.1); 
+  
+  backdrop-filter: blur(12px);
+  
+  /* Edge Gradients to fade text in/out smoothly */
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
 
+/* Decorative Corner Brackets */
+.status-strip-inner::before,
+.status-strip-inner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  background-color: var(--emerald);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--emerald);
+  transform: translateY(-50%);
+  z-index: 5;
+}
+.status-strip-inner::before { left: 12px; }
+.status-strip-inner::after { right: 12px; }
+
+/* MARQUEE ANIMATION */
 .status-marquee {
   display: inline-flex;
-  gap: 3rem;
+  gap: 4rem;
   white-space: nowrap;
-  color: #e5f9f0;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
+  
+  /* --- FIXES --- */
+  /* 1. GPU Acceleration (Stops Flicker) */
+  transform: translate3d(0, 0, 0);
+  
+  /* 2. Removed text-shadow (Stops Blur) */
+  
+  /* 3. Removed font-smoothing & backface-visibility (Restores Sharpness) */
+  
+  /* Typography */
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  opacity: 0.82;
-  animation: statusScroll 20s linear infinite;
+  color: var(--tech-text);
+  
+  animation: statusScroll 25s linear infinite;
   will-change: transform;
 }
 
-.status-marquee span {
-  display: inline-block;
-  position: relative;
+.status-marquee.pause-on-hover:hover {
+  animation-play-state: paused;
 }
 
+/* THE SPANS */
+.status-marquee span {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* THE "SIGNAL DOT" SEPARATOR */
 .status-marquee span::before {
   content: '';
-  position: absolute;
-  left: -1.6rem;
-  top: 50%;
+  display: inline-block;
+  margin-right: 1.5rem;
+  
   width: 6px;
   height: 6px;
-  border-radius: 999px;
-  background: radial-gradient(circle, #22c55e 0%, #16a34a 45%, transparent 70%);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
-  transform: translateY(-50%);
+  border-radius: 50%;
+  
+  background-color: #34d399;
+  box-shadow: 0 0 10px var(--emerald);
+  
+  animation: pulseDot 2s infinite ease-in-out;
 }
 
+/* Hide the first dot */
+.status-marquee span:first-child::before {
+  opacity: 0; 
+}
+
+/* ANIMATIONS */
 @keyframes statusScroll {
-  0% {
-    transform: translateX(0%);
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.9);
+    box-shadow: 0 0 0px var(--emerald);
   }
-  100% {
-    transform: translateX(-50%);
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow: 0 0 8px var(--emerald);
   }
 }
 
