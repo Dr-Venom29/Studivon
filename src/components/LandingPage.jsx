@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import logo from '../assets/logo.png';
+import NeuralGrid from './NeuralGrid';
 import './LandingPage.css';
 
 const HERO_WORDS = [
@@ -236,6 +237,7 @@ const LandingPage = ({ onStartScan }) => {
       </div>
 
       <div className="interface-layer">
+        <NeuralGrid />
         <div className="neural-scan-line" />
 
         <div className="top-nav content-fade">

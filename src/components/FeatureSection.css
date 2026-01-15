@@ -14,6 +14,16 @@
   overflow: hidden;
 }
 
+.neural-grid-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .section-header {
   text-align: center;
   max-width: 800px;

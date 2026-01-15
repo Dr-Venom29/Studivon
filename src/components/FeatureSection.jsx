@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './FeatureSection.css';
+import NeuralGrid from './NeuralGrid';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -119,6 +120,7 @@ const FeatureSection = () => {
 
   return (
     <section ref={sectionRef} className="section-container">
+      <NeuralGrid />
       <header className="section-header">
         <p className="section-label">[ SYSTEM CAPABILITIES ]</p>
         <h2 className="section-title">
