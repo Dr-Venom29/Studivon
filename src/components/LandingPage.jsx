@@ -236,6 +236,8 @@ const LandingPage = ({ onStartScan }) => {
       </div>
 
       <div className="interface-layer">
+        <div className="neural-scan-line" />
+
         <div className="top-nav content-fade">
           <div className="nav-left">
             <img src={logo} alt="Studivon logo" className="nav-logo" />

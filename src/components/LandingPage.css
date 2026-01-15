@@ -324,6 +324,27 @@
   pointer-events: none;
 }
 
+.neural-scan-line {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: -20%;
+  height: 70px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(16, 185, 129, 0.1) 20%,
+    rgba(16, 185, 129, 0.8) 50%,
+    rgba(16, 185, 129, 0.1) 80%,
+    transparent 100%
+  );
+  opacity: 0;
+  mix-blend-mode: screen;
+  filter: blur(0.4px);
+  z-index: 18;
+  pointer-events: none;
+}
+
 /* MOBILE BREAKPOINTS */
 @media (max-width: 640px) {
   .top-nav {

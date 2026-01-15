@@ -5,21 +5,14 @@ import './FeatureSection.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const FeatureCard = ({ title, subtitle, description, iconColor }) => {
+const FeatureCard = ({ title, subtitle, description }) => {
   return (
     <div className="feature-card">
-      {/* Dynamic scan line element */}
-      <div className="card-scanner"></div>
-      
       <div className="card-content">
         <span className="system-badge">{subtitle}</span>
         <h3 className="feature-title">{title}</h3>
         <p className="feature-desc">{description}</p>
       </div>
-      <div className="card-corner-accent" style={{ borderColor: iconColor }}></div>
-      
-      {/* Decorative HUD numbers */}
-      <div className="card-id">ID: {Math.random().toString(36).substr(2, 5).toUpperCase()}</div>
     </div>
   );
 };
@@ -30,62 +23,95 @@ const FeatureSection = () => {
 
   useLayoutEffect(() => {
     let ctx = gsap.context(() => {
-      // 1. Header Protocol Text Animation (Typewriter effect)
+      // 0. Neural Descent Scan: hero compresses, scan line sweeps, grid intensifies, features rise
+      const neuralTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "top center",
+          scrub: true,
+        },
+      });
+
+      neuralTl
+        // Phase 1 – Compression: hero moves up and slightly scales down
+        .to(
+          ".hero-content",
+          {
+            y: -40,
+            scale: 0.96,
+            transformOrigin: "center top",
+            ease: "none",
+          },
+          0
+        )
+        // Phase 2 – Scan Sweep: glowing line descends
+        .fromTo(
+          ".neural-scan-line",
+          { yPercent: -60, opacity: 0 },
+          { yPercent: 140, opacity: 1, ease: "none" },
+          0.05
+        )
+        // Background dots / grid intensify slightly
+        .fromTo(
+          ".stagger-grid-container",
+          { opacity: 0.75 },
+          { opacity: 1, ease: "none" },
+          0
+        )
+        // Phase 3 – System Activation: feature section rises in
+        .fromTo(
+          sectionRef.current,
+          { y: 80, opacity: 0 },
+          { y: 0, opacity: 1, ease: "none" },
+          0.25
+        );
+
+      // 1. Header Animation
       gsap.from(".section-label", {
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 85%",
+        },
+        opacity: 0,
+        y: 20,
+        duration: 0.8,
+        ease: "power2.out"
+      });
+
+      gsap.from(".section-title", {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 80%",
         },
         opacity: 0,
-        x: -20,
-        duration: 0.8
+        y: 30,
+        duration: 0.8,
+        delay: 0.1,
+        ease: "power2.out"
       });
 
-      // 2. The "Crazy" Grid Transition
+      // 2. Card Animation (Fade + Slight Y Movement + Stagger)
+      // No bouncy effects, no scaling, just clean reveal
       const cards = gsap.utils.toArray(".feature-card");
       
       gsap.fromTo(cards, 
         { 
           opacity: 0,
-          scale: 0.8,
-          y: 100,
-          rotationX: 45, // Tilt back in 3D space
-          transformOrigin: "center top",
+          y: 60, 
         },
         {
           opacity: 1,
-          scale: 1,
           y: 0,
-          rotationX: 0,
-          stagger: {
-            amount: 0.8,
-            from: "start"
-          },
-          duration: 1.2,
-          ease: "expo.out",
+          stagger: 0.15,
+          duration: 1,
+          ease: "power3.out", // Smooth, premium deceleration
           scrollTrigger: {
             trigger: gridRef.current,
             start: "top 85%",
-            end: "top 30%",
-            scrub: 1, // Makes the transition tied to the scroll speed
           }
         }
       );
-
-      // 3. Scanner Line Loop (Independent of scroll once triggered)
-      ScrollTrigger.create({
-        trigger: gridRef.current,
-        start: "top 80%",
-        onEnter: () => {
-          gsap.to(".card-scanner", {
-            top: "100%",
-            duration: 2,
-            stagger: 0.2,
-            repeat: -1,
-            ease: "none"
-          });
-        }
-      });
     }, sectionRef);
     
     return () => ctx.revert();
@@ -93,13 +119,10 @@ const FeatureSection = () => {
 
   return (
     <section ref={sectionRef} className="section-container">
-      {/* Background decoration */}
-      <div className="section-bg-grid"></div>
-      
       <header className="section-header">
-        <p className="section-label">PROTOCOL: SYSTEM_CAPABILITIES_REVEAL</p>
+        <p className="section-label">[ SYSTEM CAPABILITIES ]</p>
         <h2 className="section-title">
-          Engineering Your <span>Neural Edge.</span>
+          Engineering Your <span className="highlight">Neural Edge.</span>
         </h2>
       </header>
 
@@ -108,25 +131,21 @@ const FeatureSection = () => {
           subtitle="COGNITIVE SYNC"
           title="Adaptive Study Engine"
           description="Builds fluid, high-velocity schedules that recalibrate based on your real-time performance patterns."
-          iconColor="#10b981"
         />
         <FeatureCard 
           subtitle="RETENTION CORE"
-          title="Spaced Repetition System"
+          title="Spaced Repetition"
           description="Mathematical optimization of revision intervals, ensuring concepts are precision-locked into long-term neural memory."
-          iconColor="#10b981"
         />
         <FeatureCard 
           subtitle="LOAD MONITOR"
           title="Burnout Detection"
           description="Biometric and performance tracking to preemptively identify cognitive overload before it impacts mastery."
-          iconColor="#10b981"
         />
         <FeatureCard 
           subtitle="PRECISION FOCUS"
           title="Weak Subject Isolation"
           description="Deep-dive diagnostics that isolate friction points in your learning and prioritize high-impact problem areas."
-          iconColor="#10b981"
         />
       </div>
     </section>
