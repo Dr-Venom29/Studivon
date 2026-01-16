@@ -1,7 +1,12 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// Initialize Gemini 3 Flash
-const genAI = new GoogleGenerativeAI("AIzaSyBILm87uvm1iSVoODGZ2UP6TNF-XhJb-T8");
+// Initialize Gemini 3 Flash with API key from environment
+const apiKey = process.env.GOOGLE_API_KEY;
+if (!apiKey) {
+    console.warn("[Studivon] GOOGLE_API_KEY is not set. Gemini coach routes will fail until it is configured in your .env file.");
+}
+
+const genAI = new GoogleGenerativeAI(apiKey || "");
 const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));

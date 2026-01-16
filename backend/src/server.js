@@ -1,7 +1,7 @@
+require('dotenv').config();
 const express = require('express');
 const { connectDB } = require('./db/connection');
 const taskRoutes = require('./routes/taskRoutes');
-require('dotenv').config();
 
 const app = express();
 app.use(express.json()); // Allows your app to read JSON data
