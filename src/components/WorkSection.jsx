@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './WorkSection.css';
+import NeuralGrid from './NeuralGrid';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -90,7 +91,7 @@ const WorkSection = () => {
 
   return (
     <section ref={containerRef} className="work-section">
-      <div className="work-bg-grid"></div>
+      <NeuralGrid />
 
       <div className="work-container">
         {/* Header */}
