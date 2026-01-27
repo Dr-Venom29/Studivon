@@ -104,6 +104,7 @@
   position: relative;
   z-index: 2;
   background: linear-gradient(90deg, var(--emerald-light), #22d3ee);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 
 const NeuralGrid = () => {
   const canvasRef = useRef(null);
+  const animationRef = useRef(null);
+  const visibleRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -57,10 +59,10 @@ const NeuralGrid = () => {
       initGrid();
     };
 
-    const handleMouseMove = (e) => {
+    const activateCell = (clientX, clientY) => {
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
 
       mouse.x = x;
       mouse.y = y;
@@ -73,9 +75,20 @@ const NeuralGrid = () => {
       }
     };
 
-    let animationId;
+    const handleMouseMove = (e) => activateCell(e.clientX, e.clientY);
+
+    const handleTouchMove = (e) => {
+      // Prevent scrolling if needed, or just track touch
+      const touch = e.touches[0];
+      if (touch) activateCell(touch.clientX, touch.clientY);
+    };
 
     const drawGrid = () => {
+      if (!visibleRef.current) {
+        // Pause loop if not visible
+        return;
+      }
+
       ctx.clearRect(0, 0, width, height);
 
       // Subtle HUD persistence glow overlay
@@ -129,19 +142,35 @@ const NeuralGrid = () => {
         }
       }
 
-      animationId = requestAnimationFrame(drawGrid);
+      animationRef.current = requestAnimationFrame(drawGrid);
     };
 
     initGrid();
-    drawGrid();
+
+    // Observer for Visibility/Performance
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        visibleRef.current = entry.isIntersecting;
+        if (entry.isIntersecting) {
+          // Restart loop if stopped
+          cancelAnimationFrame(animationRef.current);
+          drawGrid();
+        }
+      });
+    }, { threshold: 0 });
+
+    observer.observe(canvas);
 
     window.addEventListener('resize', handleResize);
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
-      if (animationId) cancelAnimationFrame(animationId);
+      window.removeEventListener('touchmove', handleTouchMove);
+      observer.disconnect();
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
   }, []);
 
