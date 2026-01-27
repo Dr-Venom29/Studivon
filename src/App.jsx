@@ -3,6 +3,7 @@ import HeroMask from './components/HeroMask';
 import LandingPage from './components/LandingPage';
 import FeatureSection from './components/FeatureSection'; // New Import
 import ScanRoom from './components/ScanRoom';
+import WorkSection from './components/WorkSection';
 import './App.css';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
         <>
           <LandingPage onStartScan={handleStartScan} />
           <FeatureSection /> {/* Rendered as a scrollable part of Landing */}
+          <WorkSection />
         </>
       )}
 

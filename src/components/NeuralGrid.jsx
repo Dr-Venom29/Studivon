@@ -12,7 +12,7 @@ const NeuralGrid = () => {
     let height = 0;
 
     const mouse = { x: -9999, y: -9999 };
-    const squareSize = 36; // Slightly smaller cubes for finer flow
+    const squareSize = 30; // Slightly smaller cubes for a more compact grid
     const grid = [];
     let cols = 0;
     let rows = 0;
