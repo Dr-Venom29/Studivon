@@ -1,6 +1,7 @@
-//const Bytez = require("bytez.js");
-//const sdk = new Bytez("f723975a0a5ca3fcb8d3cd1068932027");
-//const model = sdk.model("Qwen/Qwen3-0.6B");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const apiKey = process.env.GOOGLE_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey || "");
+const geminiModel = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
 const { ObjectId } = require('mongodb');
 const { getDb } = require('../db/connection');
@@ -474,7 +475,7 @@ exports.getTrendAnalysis = async (req, res) => {
     }
 };
 
-/*exports.setUserGoal = async (req, res) => {
+exports.setUserGoal = async (req, res) => {
     try {
         const { goal, userId } = req.body; 
         const db = getDb();
@@ -482,15 +483,10 @@ exports.getTrendAnalysis = async (req, res) => {
         // 1. UPDATED PROMPT: Forces the model to be concise
         const prompt = `The user's goal is: "${goal}". Provide 6 specific, one-word keywords. Return ONLY the keywords separated by commas. No other text.`;
         
-        const { error, output } = await model.run([{ "role": "user", "content": prompt }]);
-        if (error) throw new Error("Bytez Model Error: " + JSON.stringify(error));
+        const result = await geminiModel.generateContent(prompt);
+        const rawText = result.response.text();
 
         // 2. PARSE AND CLEAN OUTPUT: Removes <think> blocks and reasoning
-        const rawText = (typeof output === 'string') 
-            ? output 
-            : (Array.isArray(output) ? output[0].content : (output.content || ""));
-
-        // Use Regex to strip everything inside <think> tags
         const cleanText = rawText.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 
         // Split and filter out empty strings or artifacts
@@ -499,24 +495,24 @@ exports.getTrendAnalysis = async (req, res) => {
             .filter(k => k.length > 0 && !k.includes('<') && !k.includes('>'))
             .slice(0, 6);
 
-        // 3. DATABASE UPDATE: Using the correct targetId
-        const targetId = req.userId || userId;
-        if (!targetId) return res.status(400).json({ error: "Missing userId for update." });
+        // 3. DATABASE UPDATE: Using the correct targetId or default username
+        let targetId = req.userId || userId;
+        let query = {};
+        if (targetId) {
+            try {
+                query = { _id: new ObjectId(targetId) };
+            } catch (e) {
+                query = { username: "student_core" };
+            }
+        } else {
+            query = { username: "student_core" };
+        }
         
         const updateResult = await db.collection('users').updateOne(
-            { _id: new ObjectId(targetId) }, 
-            { $set: { currentGoal: goal, goalKeywords: keywords } }
+            query, 
+            { $set: { currentGoal: goal, goalKeywords: keywords, username: "student_core" } },
+            { upsert: true }
         );
-
-        console.log(`DB Update - Matched: ${updateResult.matchedCount}, Modified: ${updateResult.modifiedCount}`);
-
-        // If matchedCount is 0, the ID you provided doesn't exist in the 'users' collection
-        if (updateResult.matchedCount === 0) {
-            return res.status(404).json({ 
-                error: "User not found in DB. Ensure you are using a User ID, not a Task ID.", 
-                keywords 
-            });
-        }
 
         res.json({ message: "Goal strategy optimized and saved.", keywords, saved: true });
     } catch (error) {
@@ -529,27 +525,33 @@ exports.getTasks = async (req, res) => {
     try {
         const db = getDb();
         
-        // 1. In a real app, you'd fetch keywords from the User profile in DB.
-        // For testing, we can pass them via Query Params.
-        const { goalKeywords } = req.query; 
-        const keywords = goalKeywords ? goalKeywords.split(',').map(k => k.toLowerCase()) : [];
+        // 1. Fetch user's actual keywords if they exist in DB, otherwise use query params.
+        let keywords = [];
+        const user = await db.collection('users').findOne({ username: "student_core" });
+        if (user && user.goalKeywords) {
+            keywords = user.goalKeywords;
+        } else {
+            const { goalKeywords } = req.query; 
+            keywords = goalKeywords ? goalKeywords.split(',').map(k => k.toLowerCase()) : [];
+        }
 
         const tasks = await db.collection('tasks').find({ status: 'pending' }).toArray();
 
         const prioritizedTasks = tasks.map((task) => {
+            const today = new Date();
+            const targetDate = new Date(task.deadline || today);
+            const diffTime = targetDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const daysToDeadline = diffDays > 0 ? diffDays : 1;
+
             // Standard Priority Calculation
-            let baseScore = (task.difficulty * 25) + (100 / (task.daysToDeadline || 1));
+            let baseScore = (task.difficulty * 25) + (100 / daysToDeadline);
             
             // 🎯 GOAL ALIGNMENT BOOST
             let alignmentMultiplier = 1.0;
-            const taskContent = `${task.title} ${task.subject}`.toLowerCase();
-            
-            // Check if any keyword exists in the task title or subject
             const match = keywords.some(word => {
                 const cleanWord = word.trim().toLowerCase();
                 const cleanContent = `${task.title} ${task.subject}`.toLowerCase();
-                
-                // Check if the word is not empty and exists in the content
                 return cleanWord.length > 0 && cleanContent.includes(cleanWord);
             });
             
@@ -571,7 +573,7 @@ exports.getTasks = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch prioritized tasks." });
     }
-};*/
+};
 
 exports.getWeeklyReport = async (req, res) => {
     try {

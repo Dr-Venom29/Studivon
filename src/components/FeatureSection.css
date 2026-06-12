@@ -36,6 +36,7 @@
   position: relative;
   z-index: 2;
 }
+
 /* Big Bold Headline */
 .section-title {
   font-size: clamp(2.5rem, 5vw, 4rem);
@@ -63,11 +64,16 @@
 }
 
 @media (min-width: 768px) {
-  .feature-grid { grid-template-columns: repeat(2, 1fr); gap: 30px; }
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
 }
 
 @media (min-width: 1024px) {
-  .feature-grid { grid-template-columns: repeat(4, 1fr); }
+  .feature-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 /* Glass Cards */
@@ -76,18 +82,18 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
-  
+
   border-radius: 16px;
-  
+
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  
+
   /* Soft Shadow for depth */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
-  
+
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -140,11 +146,10 @@
   margin: 0 1.4rem 0 0.9rem;
   align-self: stretch;
   background: linear-gradient(180deg,
-    rgba(16, 185, 129, 0.1) 0%,
-    rgba(16, 185, 129, 0.8) 40%,
-    rgba(56, 189, 248, 0.8) 60%,
-    rgba(15, 23, 42, 0.0) 100%
-  );
+      rgba(16, 185, 129, 0.1) 0%,
+      rgba(16, 185, 129, 0.8) 40%,
+      rgba(56, 189, 248, 0.8) 60%,
+      rgba(15, 23, 42, 0.0) 100%);
   box-shadow: 0 0 18px rgba(16, 185, 129, 0.4);
 }
 
@@ -262,10 +267,12 @@
 }
 
 @keyframes blink {
+
   0%,
   50% {
     opacity: 1;
   }
+
   50.01%,
   100% {
     opacity: 0;

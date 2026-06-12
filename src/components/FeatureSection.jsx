@@ -109,11 +109,11 @@ const FeatureSection = () => {
 
       // 2. Card Animation (system modules loading in sequence)
       const cards = gsap.utils.toArray(".feature-card");
-      
-      gsap.fromTo(cards, 
-        { 
+
+      gsap.fromTo(cards,
+        {
           opacity: 0,
-          y: 40, 
+          y: 40,
         },
         {
           opacity: 1,
@@ -128,7 +128,7 @@ const FeatureSection = () => {
         }
       );
     }, sectionRef);
-    
+
     return () => ctx.revert();
   }, []);
 
@@ -143,7 +143,7 @@ const FeatureSection = () => {
       </header>
 
       <div ref={gridRef} className="feature-grid">
-        <FeatureCard 
+        <FeatureCard
           subtitle="COGNITIVE SYNC"
           title="Adaptive Study Engine"
           description={
@@ -159,7 +159,7 @@ const FeatureSection = () => {
           status="STATUS: ACTIVE"
           meta="MODE: ADAPTIVE"
         />
-        <FeatureCard 
+        <FeatureCard
           subtitle="RETENTION CORE"
           title="Spaced Repetition"
           description={
@@ -175,7 +175,7 @@ const FeatureSection = () => {
           status="STATUS: OPTIMAL"
           meta="MODE: SPACED"
         />
-        <FeatureCard 
+        <FeatureCard
           subtitle="LOAD MONITOR"
           title="Burnout Detection"
           description={
@@ -191,7 +191,7 @@ const FeatureSection = () => {
           status="STATUS: MONITORING"
           meta="RISK: LOW"
         />
-        <FeatureCard 
+        <FeatureCard
           subtitle="PRECISION FOCUS"
           title="Weak Subject Isolation"
           description={
@@ -207,7 +207,7 @@ const FeatureSection = () => {
           status="STATUS: SCANNING"
           meta="PRIORITY: HIGH"
         />
-        <FeatureCard 
+        <FeatureCard
           subtitle="NEURAL TELEMETRY"
           title="Real-time Bio-Feedback"
           description={
@@ -227,7 +227,7 @@ const FeatureSection = () => {
           status="STATUS: STREAMING"
           meta="SIGNAL: STABLE"
         />
-        <FeatureCard 
+        <FeatureCard
           subtitle="SYNAPTIC BRIDGING"
           title="Cross-Domain Synthesis"
           description={
@@ -247,7 +247,7 @@ const FeatureSection = () => {
           status="STATUS: LINKED"
           meta="COVERAGE: 82%"
         />
-        <FeatureCard 
+        <FeatureCard
           subtitle="DATA DOSSIER"
           title="Predictive Mastery Analytics"
           description={
@@ -267,7 +267,7 @@ const FeatureSection = () => {
           status="STATUS: PREDICTING"
           meta="CONFIDENCE: 94%"
         />
-        <FeatureCard 
+        <FeatureCard
           subtitle="CONTENT DISTILLATION"
           title="Automated Neural Summaries"
           description={

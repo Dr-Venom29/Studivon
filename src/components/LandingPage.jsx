@@ -42,8 +42,8 @@ const LandingPage = ({ onStartScan }) => {
 
       if (!hasAnimated) {
         tl.addLabel("start")
-          .fromTo(".reveal-dot", 
-            { scale: 0, opacity: 0 }, 
+          .fromTo(".reveal-dot",
+            { scale: 0, opacity: 0 },
             { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(2)" },
             "start"
           )
@@ -57,17 +57,17 @@ const LandingPage = ({ onStartScan }) => {
             }
           })
           .to(".reveal-dot", { opacity: 0, duration: 0.5 }, "-=1.5")
-          .fromTo(".grid-dot", 
+          .fromTo(".grid-dot",
             { scale: 0, opacity: 0 },
-            { 
-              scale: 1, 
-              opacity: 0.55, 
+            {
+              scale: 1,
+              opacity: 0.55,
               duration: 1.2,
               stagger: { grid: [13, 13], from: "center", amount: 1.5 },
-              ease: "power2.out" 
+              ease: "power2.out"
             }, "-=1.2")
-          .fromTo(".content-fade", 
-            { y: 30, opacity: 0 }, 
+          .fromTo(".content-fade",
+            { y: 30, opacity: 0 },
             { y: 0, opacity: 1, duration: 1, stagger: 0.15, ease: "power3.out" },
             "-=1"
           );
@@ -219,12 +219,12 @@ const LandingPage = ({ onStartScan }) => {
       stagger: 0.05,
       ease: "power2.in"
     })
-    .to(containerRef.current, {
-      "--mask-size": "0%", 
-      duration: 1.2,
-      ease: "expo.inOut"
-    }, "-=0.3")
-    .to(".reveal-dot", { opacity: 1, scale: 1, duration: 0.4 }, "-=0.5");
+      .to(containerRef.current, {
+        "--mask-size": "0%",
+        duration: 1.2,
+        ease: "expo.inOut"
+      }, "-=0.3")
+      .to(".reveal-dot", { opacity: 1, scale: 1, duration: 0.4 }, "-=0.5");
   };
 
   return (
