@@ -3,10 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const { connectDB } = require('./db/connection');
 const taskRoutes = require('./routes/taskRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 app.use(cors());
 app.use(express.json()); // Allows your app to read JSON data
+app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 
 

@@ -20,6 +20,7 @@ exports.createSmartTask = async (req, res) => {
         const priorityScore = (safeDifficulty * 25) + (100 / diffDays);
 
         const newTask = {
+            userId: new ObjectId(req.userId),
             title,
             subject,
             taskType: req.body.taskType || "Practice", // New: "Revision", "Practice", or "First-time"
@@ -45,7 +46,7 @@ exports.completeTask = async (req, res) => {
         const { taskId } = req.params;
         const { actualMinutes } = req.body;
 
-        const task = await db.collection('tasks').findOne({ _id: new ObjectId(taskId) });
+        const task = await db.collection('tasks').findOne({ _id: new ObjectId(taskId), userId: new ObjectId(req.userId) });
         if (!task) return res.status(404).json({ error: "Task not found" });
 
         const efficiencyRatio = task.estimatedMinutes / actualMinutes;
@@ -62,7 +63,8 @@ exports.completeTask = async (req, res) => {
         const highStressCount = await db.collection('tasks').countDocuments({
             status: 'completed',
             difficulty: { $gte: 4 },
-            completedAt: { $gte: twentyFourHoursAgo }
+            completedAt: { $gte: twentyFourHoursAgo },
+            userId: new ObjectId(req.userId)
         });
 
         // --- 🧬 SPACED REPETITION ENGINE (New) ---
@@ -80,6 +82,7 @@ exports.completeTask = async (req, res) => {
             nextReviewDate.setDate(nextReviewDate.getDate() + nextStability);
 
             const autoRevisionTask = {
+                userId: new ObjectId(req.userId),
                 title: `Review: ${task.title}`,
                 subject: task.subject,
                 taskType: "Revision",
@@ -99,7 +102,7 @@ exports.completeTask = async (req, res) => {
 
         // --- 💾 DATABASE UPDATE ---
         await db.collection('tasks').updateOne(
-            { _id: new ObjectId(taskId) },
+            { _id: new ObjectId(taskId), userId: new ObjectId(req.userId) },
             { 
                 $set: { 
                     status: 'completed', 
@@ -131,7 +134,7 @@ exports.handleMissedTask = async (req, res) => {
         const { taskId } = req.params;
 
         // Find the original task
-        const task = await db.collection('tasks').findOne({ _id: new ObjectId(taskId) });
+        const task = await db.collection('tasks').findOne({ _id: new ObjectId(taskId), userId: new ObjectId(req.userId) });
 
         if (!task) return res.status(404).json({ error: "Task not found" });
 
@@ -139,7 +142,7 @@ exports.handleMissedTask = async (req, res) => {
         const boostedPriority = Math.round(task.priorityScore * 1.3);
 
         await db.collection('tasks').updateOne(
-            { _id: new ObjectId(taskId) },
+            { _id: new ObjectId(taskId), userId: new ObjectId(req.userId) },
             { 
                 $set: { 
                     status: 'missed', 
@@ -164,7 +167,7 @@ exports.getSubjectMastery = async (req, res) => {
 
         // MongoDB Aggregation: Group by subject and calculate average efficiency
         const masteryData = await db.collection('tasks').aggregate([
-            { $match: { status: 'completed' } },
+            { $match: { status: 'completed', userId: new ObjectId(req.userId) } },
             { 
                 $group: { 
                     _id: "$subject", 
@@ -191,7 +194,7 @@ exports.getPredictiveInsights = async (req, res) => {
         const { subject } = req.params;
 
         const history = await db.collection('tasks')
-            .find({ subject, status: 'completed' })
+            .find({ subject, status: 'completed', userId: new ObjectId(req.userId) })
             .sort({ completedAt: 1 })
             .toArray();
 
@@ -248,12 +251,13 @@ exports.getPredictiveInsights = async (req, res) => {
 exports.getUserStrategy = async (req, res) => {
     try {
         const db = getDb();
-        const history = await db.collection('tasks').find({ status: 'completed' }).toArray();
+        const history = await db.collection('tasks').find({ status: 'completed', userId: new ObjectId(req.userId) }).toArray();
+        const user = await db.collection('users').findOne({ _id: new ObjectId(req.userId) }) || {};
 
         if (history.length < 3) {
             return res.json({ 
-                persona: "Learning...", 
-                strategy: "Complete at least 3 tasks to unlock your personalized learning DNA." 
+                persona: user.userDNA || "Learning...", 
+                strategy: user.cognitiveStyle || "Complete at least 3 tasks to unlock your personalized learning DNA." 
             });
         }
 
@@ -301,15 +305,19 @@ exports.getStudentDossier = async (req, res) => {
         const fortyEightHoursAgo = new Date(now.getTime() - (48 * 60 * 60 * 1000));
         
         // 1. Parallel data gathering
-        const [recentTasks, pendingTasks, acuteHighIntensityTasks] = await Promise.all([
-            db.collection('tasks').find({ status: 'completed' }).sort({ completedAt: -1 }).limit(20).toArray(),
-            db.collection('tasks').find({ status: 'pending' }).sort({ priorityScore: -1 }).toArray(),
+        const [user, recentTasks, pendingTasks, acuteHighIntensityTasks] = await Promise.all([
+            db.collection('users').findOne({ _id: new ObjectId(req.userId) }),
+            db.collection('tasks').find({ status: 'completed', userId: new ObjectId(req.userId) }).sort({ completedAt: -1 }).limit(20).toArray(),
+            db.collection('tasks').find({ status: 'pending', userId: new ObjectId(req.userId) }).sort({ priorityScore: -1 }).toArray(),
             db.collection('tasks').countDocuments({
                 status: 'completed',
                 difficulty: { $gte: 4 },
-                completedAt: { $gte: fortyEightHoursAgo }
+                completedAt: { $gte: fortyEightHoursAgo },
+                userId: new ObjectId(req.userId)
             })
         ]);
+
+        const currentGoal = user?.currentGoal || "Master Academic subjects dynamically";
 
         // 2. --- ANALYTICS: EFFICIENCY & WEAKEST SUBJECT ---
         const subjectStats = {};
@@ -367,10 +375,11 @@ exports.getStudentDossier = async (req, res) => {
 
         res.json({
             identity: {
-                disciplineLevel: disciplineScore > 0.7 ? "High (Consistent)" : "Developing (Varied)",
-                efficiencyLevel: avgEff > 0.8 ? "High (Fast Learner)" : "Normal (Deep Diver)",
+                disciplineLevel: user?.disciplineLevel || (disciplineScore > 0.7 ? "High (Consistent)" : "Developing (Varied)"),
+                efficiencyLevel: user?.efficiencyLevel || (avgEff > 0.8 ? "High (Fast Learner)" : "Normal (Deep Diver)"),
                 context: stabilityContext,
-                persona: peakWindow,
+                persona: user?.userDNA || peakWindow,
+                currentGoal: currentGoal
             },
             cognitiveState: {
                 mentalLoadIndex,
@@ -417,7 +426,7 @@ exports.getTrendAnalysis = async (req, res) => {
 
         // 1. --- PAST TRENDS ---
         const allRecent = await db.collection('tasks')
-            .find({ status: 'completed', completedAt: { $gte: fourteenDaysAgo } })
+            .find({ status: 'completed', completedAt: { $gte: fourteenDaysAgo }, userId: new ObjectId(req.userId) })
             .toArray();
 
         const currentWeek = allRecent.filter(t => new Date(t.completedAt) >= sevenDaysAgo);
@@ -430,7 +439,7 @@ exports.getTrendAnalysis = async (req, res) => {
         const slope = prevEff === 0 ? 0 : ((currentEff - prevEff) / prevEff) * 100;
 
         // 2. --- MENTAL LOAD INDEX (Fixed & Bulletproof) ---
-        const pendingTasks = await db.collection('tasks').find({ status: 'pending' }).toArray();
+        const pendingTasks = await db.collection('tasks').find({ status: 'pending', userId: new ObjectId(req.userId) }).toArray();
         const totalDifficulty = pendingTasks.reduce((acc, t) => acc + (t.difficulty || 3), 0);
         const uniqueSubjects = [...new Set(pendingTasks.map(t => t.subject))].length;
 
@@ -495,23 +504,10 @@ exports.setUserGoal = async (req, res) => {
             .filter(k => k.length > 0 && !k.includes('<') && !k.includes('>'))
             .slice(0, 6);
 
-        // 3. DATABASE UPDATE: Using the correct targetId or default username
-        let targetId = req.userId || userId;
-        let query = {};
-        if (targetId) {
-            try {
-                query = { _id: new ObjectId(targetId) };
-            } catch (e) {
-                query = { username: "student_core" };
-            }
-        } else {
-            query = { username: "student_core" };
-        }
-        
+        // 3. DATABASE UPDATE: Using the req.userId directly
         const updateResult = await db.collection('users').updateOne(
-            query, 
-            { $set: { currentGoal: goal, goalKeywords: keywords, username: "student_core" } },
-            { upsert: true }
+            { _id: new ObjectId(req.userId) }, 
+            { $set: { currentGoal: goal, goalKeywords: keywords } }
         );
 
         res.json({ message: "Goal strategy optimized and saved.", keywords, saved: true });
@@ -527,7 +523,7 @@ exports.getTasks = async (req, res) => {
         
         // 1. Fetch user's actual keywords if they exist in DB, otherwise use query params.
         let keywords = [];
-        const user = await db.collection('users').findOne({ username: "student_core" });
+        const user = await db.collection('users').findOne({ _id: new ObjectId(req.userId) });
         if (user && user.goalKeywords) {
             keywords = user.goalKeywords;
         } else {
@@ -535,7 +531,7 @@ exports.getTasks = async (req, res) => {
             keywords = goalKeywords ? goalKeywords.split(',').map(k => k.toLowerCase()) : [];
         }
 
-        const tasks = await db.collection('tasks').find({ status: 'pending' }).toArray();
+        const tasks = await db.collection('tasks').find({ status: 'pending', userId: new ObjectId(req.userId) }).toArray();
 
         const prioritizedTasks = tasks.map((task) => {
             const today = new Date();
@@ -584,7 +580,8 @@ exports.getWeeklyReport = async (req, res) => {
         const recentTasks = await db.collection('tasks')
             .find({ 
                 status: 'completed', 
-                completedAt: { $gte: sevenDaysAgo } 
+                completedAt: { $gte: sevenDaysAgo },
+                userId: new ObjectId(req.userId)
             }).toArray();
 
         if (recentTasks.length === 0) {

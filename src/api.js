@@ -1,77 +1,147 @@
-const BASE_URL = '/api/tasks';
+const TASKS_URL = '/api/tasks';
+const AUTH_URL = '/api/auth';
+
+const getHeaders = (isJson = true) => {
+  const headers = {};
+  if (isJson) {
+    headers['Content-Type'] = 'application/json';
+  }
+  const token = localStorage.getItem('studivon_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+};
+
+// Generic robust request helper to avoid JSON parsing crashes
+async function request(url, options = {}) {
+  let response;
+  try {
+    response = await fetch(url, options);
+  } catch (err) {
+    throw new Error('Connection refused: Make sure the Studivon backend server is running.');
+  }
+
+  let data = null;
+  const contentType = response.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    try {
+      data = await response.json();
+    } catch (e) {
+      // Ignore JSON parse errors on error responses to preserve HTTP status codes
+    }
+  }
+
+  if (!response.ok) {
+    throw new Error(data?.error || `Request failed with status ${response.status}`);
+  }
+
+  return data;
+}
 
 export const api = {
+  // Authentication Endpoints
+  async login(username, password) {
+    const data = await request(`${AUTH_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    
+    // Save token to localStorage
+    if (data && data.token) {
+      localStorage.setItem('studivon_token', data.token);
+      localStorage.setItem('studivon_user', JSON.stringify(data.user));
+    }
+    return data;
+  },
+
+  async register(username, password, goal) {
+    const data = await request(`${AUTH_URL}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password, goal }),
+    });
+    
+    // Save token to localStorage
+    if (data && data.token) {
+      localStorage.setItem('studivon_token', data.token);
+      localStorage.setItem('studivon_user', JSON.stringify(data.user));
+    }
+    return data;
+  },
+
+  logout() {
+    localStorage.removeItem('studivon_token');
+    localStorage.removeItem('studivon_user');
+  },
+
+  isAuthenticated() {
+    return !!localStorage.getItem('studivon_token');
+  },
+
+  // Task & Dossier Endpoints
   async fetchDossier() {
-    const response = await fetch(`${BASE_URL}/dossier`);
-    if (!response.ok) throw new Error('Failed to fetch student dossier');
-    return response.json();
+    return request(`${TASKS_URL}/dossier`, {
+      headers: getHeaders(false),
+    });
   },
 
   async fetchWeeklyReport() {
-    const response = await fetch(`${BASE_URL}/weekly-report`);
-    if (!response.ok) throw new Error('Failed to fetch weekly report');
-    return response.json();
+    return request(`${TASKS_URL}/weekly-report`, {
+      headers: getHeaders(false),
+    });
   },
 
   async fetchTrendAnalysis() {
-    const response = await fetch(`${BASE_URL}/trends`);
-    if (!response.ok) throw new Error('Failed to fetch trend analysis');
-    return response.json();
+    return request(`${TASKS_URL}/trends`, {
+      headers: getHeaders(false),
+    });
   },
 
   async fetchTasks() {
-    const response = await fetch(`${BASE_URL}/prioritized-list`);
-    if (!response.ok) throw new Error('Failed to fetch prioritized tasks');
-    return response.json();
+    return request(`${TASKS_URL}/prioritized-list`, {
+      headers: getHeaders(false),
+    });
   },
 
   async completeTask(taskId, actualMinutes) {
-    const response = await fetch(`${BASE_URL}/complete/${taskId}`, {
+    return request(`${TASKS_URL}/complete/${taskId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getHeaders(true),
       body: JSON.stringify({ actualMinutes: Number(actualMinutes) }),
     });
-    if (!response.ok) throw new Error('Failed to complete task');
-    return response.json();
   },
 
   async addSmartTask(taskData) {
-    const response = await fetch(`${BASE_URL}/add`, {
+    return request(`${TASKS_URL}/add`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getHeaders(true),
       body: JSON.stringify(taskData),
     });
-    if (!response.ok) throw new Error('Failed to create smart task');
-    return response.json();
   },
 
   async setUserGoal(goal) {
-    const response = await fetch(`${BASE_URL}/set-goal`, {
+    return request(`${TASKS_URL}/set-goal`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getHeaders(true),
       body: JSON.stringify({ goal }),
     });
-    if (!response.ok) throw new Error('Failed to save user goal');
-    return response.json();
   },
 
   async fetchCoachAdvice({ strategy, prediction, trends }) {
-    const response = await fetch(`${BASE_URL}/coach-advice`, {
+    return request(`${TASKS_URL}/coach-advice`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getHeaders(true),
       body: JSON.stringify({ strategy, prediction, trends }),
     });
-    if (!response.ok) throw new Error('Failed to fetch coach advice');
-    return response.json();
   },
 
   async fetchStrategyCoachAdvice({ strategy, prediction, trends, goal }) {
-    const response = await fetch(`${BASE_URL}/strategy-coach`, {
+    return request(`${TASKS_URL}/strategy-coach`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getHeaders(true),
       body: JSON.stringify({ strategy, prediction, trends, goal }),
     });
-    if (!response.ok) throw new Error('Failed to fetch strategy mentor advice');
-    return response.json();
   }
 };

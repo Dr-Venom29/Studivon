@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { api } from '../api';
 import './ScanRoom.css';
 
-const ScanRoom = ({ onBackToLanding }) => {
+const ScanRoom = ({ onBackToLanding, user, onLogout }) => {
   // UI and State Management
   const [tasks, setTasks] = useState([]);
   const [dossier, setDossier] = useState(null);
@@ -501,6 +501,9 @@ const ScanRoom = ({ onBackToLanding }) => {
               </button>
               <button className="btn-action text" onClick={onBackToLanding}>
                 Return Home
+              </button>
+              <button className="btn-action text" style={{ color: '#ef4444' }} onClick={onLogout}>
+                Terminate Session (Logout)
               </button>
             </div>
           </footer>

@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const taskController = require('../controllers/taskController');
 const coachController = require('../controllers/coachController');
+const auth = require('../middleware/auth');
 
-// This route handles creating a task with the "Priority Logic"
+// Require authentication for all subsequent routes
+router.use(auth);
 router.post('/add', taskController.createSmartTask);
 router.put('/missed/:taskId', taskController.handleMissedTask);
 router.put('/complete/:taskId', taskController.completeTask);

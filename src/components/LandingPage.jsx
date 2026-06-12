@@ -12,7 +12,7 @@ const HERO_WORDS = [
   'Clarity',
 ];
 
-const LandingPage = ({ onStartScan }) => {
+const LandingPage = ({ onStartScan, user, onLogout, onOpenLogin }) => {
   const containerRef = useRef(null);
   const ctaRef = useRef(null);
   const subTextRef = useRef(null);
@@ -245,7 +245,18 @@ const LandingPage = ({ onStartScan }) => {
             <img src={logo} alt="Studivon logo" className="nav-logo" />
             <span className="nav-brand">Studivon</span>
           </div>
-          <button className="nav-login-btn">Login</button>
+          {user ? (
+            <div className="nav-user-container" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <span className="nav-clearance-id" style={{ fontFamily: 'JetBrains Mono', fontSize: '0.75rem', color: '#10b981' }}>
+                ACCESS_KEY: {user.username.toUpperCase()}
+              </span>
+              <button className="nav-login-btn logout" onClick={onLogout} style={{ border: '1px solid rgba(239, 68, 68, 0.4)', color: '#ef4444' }}>
+                LOGOUT
+              </button>
+            </div>
+          ) : (
+            <button className="nav-login-btn" onClick={onOpenLogin}>Login</button>
+          )}
         </div>
 
         <div className="status-strip content-fade">
